@@ -27,6 +27,11 @@ document.addEventListener('DOMContentLoaded', () =>{
     createBoard()
 
 // Faire glisser les bonbons
+    let colorBeingDragged
+    let colorBeingReplaced
+    let  squareIdBeingDragged
+    let squareIdBeingReplaced
+
     squares.forEach(square => square.addEventListener('dragstart', dragStart))
     squares.forEach(square => square.addEventListener('dragend', dragEnd))
     squares.forEach(square => square.addEventListener('dragover', dragOver))
@@ -35,14 +40,19 @@ document.addEventListener('DOMContentLoaded', () =>{
     squares.forEach(square => square.addEventListener('drop', dragDrop))
 
     function dragStart() {
+        colorBeingDragged = this.style.backgroundColor
+        squareIdBeingDragged = parseInt(this.id)
+        console.log(colorBeingDragged)
         console.log(this.id, 'dragstart')
     }
 
-    function dragOver() {
+    function dragOver(e) {
+        e.preventDefault()
         console.log(this.id, 'dragOver')
     }
 
-    function dragEnter() {
+    function dragEnter(e) {
+        e.preventDefault()
         console.log(this.id, 'dragEnter')
     }
 
@@ -50,12 +60,31 @@ document.addEventListener('DOMContentLoaded', () =>{
         console.log(this.id, 'dragLeave')
     }
 
-    function dragEnd() {
-        console.log(this.id, 'dragEnd')
-    }
-
     function dragDrop() {
         console.log(this.id, 'dragDrop')
+        colorBeingReplaced = this.style.backgroundColor
+        squareIdBeingReplaced = parseInt(this.id)
+        this.style.backgroundColor = colorBeingDragged
+        squares [squareIdBeingDragged].style.backgroundColor = colorBeingReplaced
+    }
+
+    function dragEnd() {
+        console.log(this.id, 'dragEnd')
+        // Faire le movement valide lors du déplacement des caes
+        let validMoves = [
+            squareIdBeingDragged -1,
+            squareIdBeingDragged -width,
+            squareIdBeingDragged +1,
+            squareIdBeingDragged +width,
+        ]
+        let validMove = validMoves.includes(squareIdBeingReplaced)
+
+        if (squareIdBeingReplaced && validMove) {
+            squareIdBeingReplaced = null
+        } else if (squareIdBeingReplaced && !validMove) {
+            squares [squareIdBeingReplaced].style.backgroundColor = colorBeingReplaced
+            squares [squareIdBeingDragged].style.backgroundColor = colorBeingDragged
+        } else squares [squareIdBeingDragged].style.backgroundColor = colorBeingDragged
     }
 
 
